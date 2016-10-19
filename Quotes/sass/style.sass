@@ -1,0 +1,54 @@
+$color: hsla(random(365), 80%, 50%, 1)
+
+body
+  transition: all 1s ease
+  background-color: $color
+  .page
+    margin: 50px 100px
+    height: 200px
+    h1
+      font-size: 3em
+      justify-content: center
+    .container
+      display: flex
+      padding: 15px
+      
+      
+    .quote
+      background-color: #fff
+      border-radius: 2px
+      flex-direction: column
+      align-items: center
+      min-height: 100px
+      transition: all 1s ease
+      box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23)
+      
+      #quote
+        flex: 10
+        font-size: 1.7em
+        transition: all 2s ease
+      #author
+        
+        
+    .buttons
+      justify-content: center
+      align-items: center
+      
+      .btn
+        border-radius: 5px
+        margin-left: 5px
+        border: 0px
+        height: 40px
+        padding: 10px
+        font-size: 1.2em
+        transition: all 0.2s ease
+        box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)
+    
+        &:hover
+          transform: scale(1.05)
+          background-color: #fff
+          box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23)
+  transition: all 0.45s cubic-bezier(.25,.8,.25,1)
+        
+        
+  

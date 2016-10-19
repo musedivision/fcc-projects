@@ -1,0 +1,379 @@
+class Instructions extends React.Component {
+  render() {
+    var { instructions } = this.props.state
+    var style = !instructions ? "hide" : "" + " intromodal text-center"
+    
+    return (
+      <div className={style}>
+        <h1>Tic Tac Toe</h1>
+        <p className="words"> The ancient game of noughts and crosses. </p>
+        <p>
+          Long before machines beat man at chess, they had dominated him at Tic Tac Toe.
+        </p>
+        <p>
+          Can you help man triumph over the machines once more?
+        </p>
+        <div className="center-flex">
+          <button className="btn btn-success btn-lg start" onClick={this.props.handleReset.bind(this)}>START</button>
+        </div>
+      </div>  
+    )
+  }
+}
+
+
+class Intro extends React.Component {
+  render() {
+    var { intro } = this.props.state
+    var style = !intro ? "hide" : "" + " intromodal text-center"
+    
+    return (
+      <div className={style}>
+        <h1>Choose your weapon?</h1>
+        <div className="choose center-flex">
+          <button className="btn btn-primary btn-lg weapon" value="X" onClick={this.props.handleChoice.bind(this)}>X</button>
+          <button className="btn btn-primary btn-lg weapon" value="O" onClick={this.props.handleChoice.bind(this)}>O</button>
+        </div> 
+      </div>
+    )
+  }
+}
+
+class Win extends React.Component {
+  render() {
+    var { finished, winner } = this.props.state
+    var style = !finished ? "hide" : "" + " intromodal text-center"
+//     change image for winner
+    var terminator = winner === "The Machines have Won" || winner === "A Draw" ? "terminator" : "hide"
+    var image = winner === "A Draw" ? "http://www.pngmart.com/files/1/Cross-Sword.png" : "http://www.pngmart.com/files/2/Terminator-PNG-HD.png" 
+    
+    return (
+      <div className={style}>
+        <h1>{winner}</h1>
+        <div className="center-flex flex-col"> 
+          <img src={image} className={terminator} />
+          <button className="btn btn-lg btn-danger" onClick={this.props.handleReset.bind(this)}>Try Again?</button>
+        </div>
+      </div>
+    )
+  }
+}
+
+class Game extends React.Component {
+  render() {
+    let { piece, human, computer } = this.props.state
+    let { handleChoice, handleCheck, handleReset } = this.props
+    
+    
+    function mark(array, buttonNumber) {
+      for(var i=0;i<array.length; i++) {
+        if(array[i] === buttonNumber) {
+          return true
+        }
+      }
+    }
+    
+    let pc = piece === "X" ? "O" : "X"
+    
+    const grid = [1,2,3,4,5,6,7,8,9].map(function(item, i){
+      return <button 
+               key={i} 
+               className="col-xs-4 g" 
+               onClick={
+                  handleCheck.bind(null, i) 
+                } > {mark(human,i) ? piece : "" }{mark(computer,i) ? pc : "" }   </button>
+    }.bind(this))
+    
+    
+    return (
+      <div className="col-xs-12 col-lg-8 col-lg-offset-2 main">
+        <div className="">
+          <h1 className="text-center"> </h1>
+          <Instructions handleReset={handleReset.bind(this)} state={this.props.state} />
+          <Intro handleChoice={ handleChoice} state={this.props.state}/>
+          <Win handleReset={handleReset.bind(this)} state={this.props.state}/>
+          
+          {grid}
+          <button className="btn btn-success center" onClick={handleReset.bind(this)}>RESET</button>
+        </div>
+      </div>
+      
+    )
+  }
+}
+
+class GameContainer extends React.Component {
+  constructor() {
+    super()
+    this.state = {
+      intro: false,
+      instructions: true,
+      piece: "",
+      finished: false,
+      human: [],
+      computer: [],
+      winner: false,
+      winning: [
+        [0,1,2], [3,4,5], [6,7,8], [0,3,6], [1,4,7], [2,5,8], [0,4,8],[2,4,6]
+      ]
+    }
+  }
+  
+  reset() {
+    let startAgain = {
+      human: [],
+      computer: [],
+      intro: true,
+      instructions: false,
+      finished: false,
+      winner: false
+    }
+    this.handleState(startAgain)
+  }
+  
+  checkWin() {
+    var { human, computer, winning, finished, winner } = this.state
+    let man = false
+    let machine = false
+    
+    function checkCombo(player, combo) {
+      let result = combo.map( (bingo) => {
+        return player.reduce( function(prev,curr) {
+          if(curr === bingo) {
+            return prev + 1
+          } else {return prev}
+        }, 0)
+      })
+      let total = result.reduce(function(prev,curr){
+        return prev + curr
+      },0)
+      return total == 3 ? true : false
+    }
+
+//    check if a player has one
+    winning.some( (combo) => {
+      
+//    check players moves against winning combo sets
+      man = checkCombo(human, combo)
+      machine = checkCombo(computer, combo)
+      
+      // give the winner their dues
+      man ? winner = "Man triumphs" : ""
+      machine ? winner = "The Machines have Won" : ""
+      
+      // show final 
+      man || machine ? finished = true : "" 
+      
+      
+      return man || machine
+    })
+    
+//     check for a draw
+    if(human.concat(computer).length === 9) {
+      finished = true
+      winner = "A Draw"
+    }
+    
+    this.handleState({
+        winner: winner,
+        finished: finished
+      })
+  }
+  
+  handleState(val) {
+    this.setState(val)
+  }
+  
+  choice(e) {
+    var { intro } = this.state
+    var val = e.target.value
+    console.log(val)
+    var nstate = {
+      intro: !intro,
+      piece: val
+    }
+    this.handleState(nstate)
+  }
+  
+  doubleCheck(number) {
+    let { human, computer } = this.state
+    let present = false
+//     check for doulbe up
+    human.forEach( (move) => {
+      if(move === number) {
+        present = true
+      }
+    }) 
+    computer.forEach( (move) => {
+      move === number ? present  = true : ""
+    })
+    !present ? 
+     this.move(number) 
+     : ""
+  }
+  
+  move(number) {
+    let { human } = this.state
+    
+    human.push(number)
+    this.handleState({
+     human: human 
+    })
+    this.turntaking()
+  }
+  
+  turntaking() {
+    let { turn, human, computer } = this.state 
+    
+    this.checkWin()
+    //     if the 
+    human.concat(computer).length < 8 ? this.ai() : ""
+  }
+  
+  ai() {
+    console.log("machine moves")
+//     goal is to create a number choice engine, 
+//     will look at the current, human / machine arrays.
+//     make block then win moves
+    let { human, computer, winning } = this.state
+    
+    // utility loops
+    function checkBlock(player, combo) {
+      let result = combo.filter(function(move) {
+        let test = true
+        player.forEach( (made) => {
+          made === move ? test = false : true
+        })
+        return test
+      })
+      return result
+    }
+    
+    function presence(array, combo, test) {
+      array.forEach((play) => {
+        
+        combo.forEach( (number) => {
+          number === play ? test = play : ""
+          
+        })
+      })
+      return test
+    }
+    
+//     remove all winning combos that include have human move array.
+    let possible = []
+    let blocks = []
+    let block = false
+    let win = false
+    
+    
+    winning.map( (combo) => {
+      
+//    check 
+      let present = false
+      let robot = false
+      
+//    human one move win positions
+      present = presence(human, combo, present)
+      
+//    robot one move win positions
+      robot = presence(computer, combo, robot)
+      
+      
+      let potentialBlock = checkBlock(human,combo)
+      let potentialWin = checkBlock(computer,combo)
+      
+      potentialBlock.length === 1 && potentialBlock[0] !== robot
+        ? block = potentialBlock : ""
+      
+      
+      
+      console.log(present, robot)
+      
+      potentialWin.length === 1 && potentialWin[0] !== present
+        ? win = potentialWin : ""
+    })
+
+//     determine the play options
+//     block, win, no win, first move
+//     create full model of plays made
+    
+    let marked = human.concat(computer)
+    let full = [0,1,2,3,4,5,6,7,8]
+    
+    let free = full.filter( (move) => {
+      let test = true
+      marked.forEach( (made) => {
+        made === move ? test = false : true
+      })
+      return test
+    })
+    
+//     make a move
+    let move = false
+    
+//     block 
+//     check human moves against combos. if they have 2 / 3 then 
+//     add mark in third spot
+    let canblock = false
+    
+    free.forEach( (item) => {
+      if(item === block[0]) {
+        canblock = true
+      }
+    })
+    
+    canblock ? move = block[0] : ""
+    
+    
+//     if no machine moves 
+//     and middle spot free - go for middle combo
+    let middle = false
+    let first = false
+    free.forEach( (item) => {
+      if(item == 4) {
+        middle = true
+      } 
+      if(item == 0) {
+        first = true
+      }
+    })
+    computer.length === 0 && middle ? move = 4 
+      : computer.length === 0 && first ? move = 0 
+        : !win && !block ? move = free[0] : ""
+    
+    
+//  if computer could win, then win 
+    
+    win ? move = win[0] : ""
+    
+    console.log("win", win) 
+    console.log("block",block) 
+//     win     
+
+    console.log(computer)
+    computer.push(move)
+    console.log(computer)
+    move ? this.setState({computer: computer}) : ""
+    
+
+    
+    this.checkWin()
+  }
+  
+  render() {
+    return (
+      <div className="main">
+        <Game 
+          state={this.state} 
+          handleChoice={this.choice.bind(this)}
+          handleMove={this.move.bind(this)}
+          handleCheck={this.doubleCheck.bind(this)}
+          handleReset={this.reset.bind(this)}
+        />
+      </div>
+    )
+  }
+}
+
+ReactDOM.render(<GameContainer />, document.getElementById('app'))

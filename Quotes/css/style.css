@@ -1,0 +1,50 @@
+body {
+  transition: all 1s ease;
+  background-color: #1a1ae6;
+  transition: all 0.45s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+body .page {
+  margin: 50px 100px;
+  height: 200px;
+}
+body .page h1 {
+  font-size: 3em;
+  justify-content: center;
+}
+body .page .container {
+  display: flex;
+  padding: 15px;
+}
+body .page .quote {
+  background-color: #fff;
+  border-radius: 2px;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100px;
+  transition: all 1s ease;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+}
+body .page .quote #quote {
+  flex: 10;
+  font-size: 1.7em;
+  transition: all 2s ease;
+}
+body .page .buttons {
+  justify-content: center;
+  align-items: center;
+}
+body .page .buttons .btn {
+  border-radius: 5px;
+  margin-left: 5px;
+  border: 0px;
+  height: 40px;
+  padding: 10px;
+  font-size: 1.2em;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+}
+body .page .buttons .btn:hover {
+  transform: scale(1.05);
+  background-color: #fff;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+}

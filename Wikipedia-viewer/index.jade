@@ -1,0 +1,32 @@
+.container
+  .row
+    .col-sm-12.text-center
+      
+      
+      h1.title-text Free Code Camp Wikipedia Viewer
+      // search box: click icon slide panel to top and disappear text
+      h4#help click icon to search
+      i.material-icons#searchIcon search
+      .searchContainer
+        input(id="searchBox", oninput="search()", onchange="otherFunction()" autocomplete="on" list="wikiDatalist" placeholder="e.g. Brexit")
+        datalist(id="wikiDatalist")
+      //random article button
+      .random  
+        a#random(href="https://en.wikipedia.org/wiki/Special:Random"): h4 Random article 
+      //ApiBox: results cards pop up here when the data is recieved
+      div#apiBox.text-left
+      // no result box
+      .noResult
+        .icon
+          i.material-icons error
+        h2 OOPS
+        p we couldnt find any matchs for that search!
+// iframe : all links to wiki pedia wi
+//- .wikiPanel
+  iframe(src="https://en.wikipedia.org/wiki/Special:Random", frameborder="2" width="100")
+  // credits for ideas and content links      
+  footer.text-center
+    p Made by Patrick McC
+          
+      
+      

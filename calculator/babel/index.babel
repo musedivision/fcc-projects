@@ -1,0 +1,132 @@
+class Button extends React.Component {
+  render() {
+    const { number, onButtonPress, addClass }  = this.props
+    
+    return (
+      <button className={"btn btn-default" + addClass} value={number} onClick={onButtonPress} >{number}</button>
+    )
+  }
+}
+
+class Layout extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      currentValue: 0,
+      equationCache: [],
+    }
+  }
+  
+  clear() {
+    this.setState({
+      currentValue: ' ',
+      equationCache: []
+    })
+  }
+  
+  handleAnswer(answer) {
+    this.setState({
+      currentValue: answer,
+      equationCache: [answer]
+    })
+  }
+  
+  calculate() {
+    let array = this.state.equationCache;
+    const operators = {
+      "+": function(a,b) {return a + b},
+      "-": function(a,b) {return a - b},
+      "÷": function(a,b) {return a / b},
+      "×": function(a,b) {return a * b},
+    }
+    // BEDMAS calc the x and / first
+    array.forEach(function(curr, i) {
+      let prev = array[i-1];
+      let replace = 0;
+      if(prev === "÷" || prev === "×") {
+        replace = operators[prev](array[i-2], curr)
+        array[i] = replace;
+        array[i-1] = "delete";
+        array[i-2] = "delete";
+      }
+    })
+    // filter out already calced values
+    let onlyPlusMinus = array.filter(function(item) {
+      if(item === "delete") {return false;} 
+                       else {return true;}
+    })
+
+    let finalAnswer = onlyPlusMinus.reduce(function(prev, curr, i, arr) {
+      if(curr === "+" || curr === "-") {
+        return operators[curr](Number(arr[i + 1]), Number(prev));
+      } else {
+        return 0 + Number(prev);
+      }
+    }) 
+    //show equation 
+    let blah = this.state.equationCache
+    blah.push("=" + finalAnswer);
+    console.log(blah)
+    this.handleAnswer(finalAnswer);
+  }
+  
+  numberString(equation, current) {
+    let prev = equation[equation.length -1];
+    if(!isNaN(Number(current)) && !isNaN(Number(prev))) {
+      equation[equation.length -1 ] = prev + current;
+    } else if(prev === "." &&  !isNaN(Number(current)) || current === "." &&  !isNaN(Number(prev))) {
+      equation[equation.length -1 ] = prev + current;
+    } else {
+      equation.push(current);  
+    }
+    return equation;
+  }
+  
+  // collecting values from my button presses
+  handleButtonPress(e) {
+    const current = e.target.value;
+    let equation = this.state.equationCache;
+    
+    // check if last value was a number if yes then add strings together.
+    this.numberString(equation, current);
+    
+    this.setState({
+      currentValue: current,
+      equationCache: equation
+    })
+  }
+  
+  render() {
+    const numberPress = this.handleButtonPress.bind(this);
+    const equals = this.calculate.bind(this);
+    const clear = this.clear.bind(this);
+    
+    const mainNum = ["7", "8", "9", "4", "5", "6", "1", "2", "3", ".", "0"].map(function(item, i) {
+      return <Button key={i} number={item} addClass=" col-xs-4 main-btn"  onButtonPress={numberPress} /> 
+    })
+    
+    return (
+      <div className="row">
+        <div className="col-xs-12">
+          <div className="current">
+            {this.state.currentValue}
+          </div>
+          <div className="equation">{this.state.equationCache.join(' ')}</div>
+          <div className="col-xs-9 numbers">
+            {mainNum}
+            <Button number="=" addClass=" col-xs-4 main-btn"  onButtonPress={equals}/>
+          </div>
+          <div className="col-xs-3">
+            <Button number="CLR" addClass=" col-xs-12 fn-btn"  onButtonPress={clear}/>
+            <Button number="÷" addClass=" col-xs-12 fn-btn"  onButtonPress={numberPress}/>
+            <Button number="×" addClass=" col-xs-12 fn-btn"  onButtonPress={numberPress}/>
+            <Button number="-" addClass=" col-xs-12 fn-btn"  onButtonPress={numberPress}/>
+            <Button number="+" addClass=" col-xs-12 fn-btn"  onButtonPress={numberPress}/>
+          </div>
+        </div>
+      </div>
+    )
+  }
+}
+
+ReactDOM.render(<Layout />, document.getElementById('app'));

@@ -1,0 +1,78 @@
+body {
+  background: #333333;
+}
+
+.container {
+  background: #333333;
+  color: #fff;
+  font-family: abel;
+}
+
+.title {
+  font-family: Pacifico;
+  margin-bottom: 35px;
+}
+
+.tomato {
+  transition: all linear 1s;
+}
+
+.circle {
+  cursor: pointer;
+  border: 10px white;
+  border-style: solid;
+}
+.circle:active {
+  background-color: #ed6c30;
+}
+
+.displayTime {
+  position: absolute;
+  font-size: 3em;
+  margin-left: 70px;
+  margin-top: 20px;
+  text-align: center;
+  min-width: 100px;
+}
+
+.break {
+  background: #bdcf46;
+}
+
+.flex {
+  display: flex;
+  flex-direction: column;
+  justify-contents: center;
+  align-items: center;
+}
+
+.btn-container {
+  display: flex;
+  margin-bottom: 20px;
+  justify-content: space-between;
+  align-items: space-around;
+}
+
+.flex-col {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 10px;
+  font-size: 1.35em;
+}
+.flex-col .btn {
+  background-color: #333333;
+  margin: 5px;
+  border-width: 1.5px;
+  font-size: 1em;
+  padding: 5px 10px;
+  outline: none;
+  outline: none;
+}
+
+.credits {
+  margin-top: 30px;
+}
+.credits a {
+  margin-left: 4px;
+}

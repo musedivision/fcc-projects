@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html >
+  <head>
+    <meta charset="UTF-8">
+    <title>Wikipedia Viewer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <link rel="stylesheet" href="css/reset.css">
+
+    <link rel='stylesheet prefetch' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css'>
+<link rel='stylesheet prefetch' href='https://fonts.googleapis.com/icon?family=Material+Icons'>
+
+        <link rel="stylesheet" href="css/style.css">
+
+    
+    
+    
+    
+  </head>
+
+  <body>
+
+    
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12 text-center">
+      <h1 class="title-text">Free Code Camp Wikipedia Viewer</h1>
+      <!-- search box: click icon slide panel to top and disappear text-->
+      <h4 id="help">click icon to search</h4><i id="searchIcon" class="material-icons">search</i>
+      <div class="searchContainer">
+        <input id="searchBox" oninput="search()" onchange="otherFunction()" autocomplete="on" list="wikiDatalist" placeholder="e.g. Brexit"/>
+        <datalist id="wikiDatalist"></datalist>
+      </div>
+      <!--random article button-->
+      <div class="random"> <a id="random" href="https://en.wikipedia.org/wiki/Special:Random">
+          <h4>Random article </h4></a></div>
+      <!--ApiBox: results cards pop up here when the data is recieved-->
+      <div id="apiBox" class="text-left"></div>
+      <!-- no result box-->
+      <div class="noResult">
+        <div class="icon"><i class="material-icons">error</i></div>
+        <h2>OOPS</h2>
+        <p>we couldnt find any matchs for that search!</p>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- iframe : all links to wiki pedia wi-->
+    <script src='https://code.jquery.com/jquery-2.2.4.min.js'></script>
+
+        <script src="js/index.js"></script>
+
+    
+    
+  </body>
+</html>

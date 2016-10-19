@@ -1,0 +1,238 @@
+class Circle extends React.Component {
+  
+  mainCircleStyles() {
+    const CIRCLE_DIAM = 250
+    return {
+      width: CIRCLE_DIAM,
+      height: CIRCLE_DIAM,
+      borderRadius: "50%"
+    }  
+  }
+  
+  tomatoLocation(CIRCLE_DIAM) {
+    let { stopwatch, stage, pomo, breaks  } = this.props.state
+    const percent = stopwatch/(stage ? pomo*60 :breaks*60 )
+    let degrees = stage ? (percent * 360) - 90: (percent * -360) - 90
+    let radians = degrees * Math.PI / 180
+    
+    let deltaY = Math.sin(radians)/ (CIRCLE_DIAM/2)
+    let deltaX = Math.cos(radians)/ (CIRCLE_DIAM/2)
+    return {
+      deltaY: deltaY * 2500,
+      deltaX: deltaX * 2500
+    }
+  }
+  
+  tomatoStyles() {
+    const diameter = 100
+    let plot = this.tomatoLocation(diameter)
+    let icon = 17.5/250 * 100
+    
+    return {
+      height: "35px",
+      width: "35px",
+      top: (diameter/2 - icon) + plot.deltaY + "%",
+      left: (diameter/2 - icon) + plot.deltaX + "%",
+      position: "relative"
+    }
+  }
+  render() {
+    let { displayTime, stage } = this.props.state
+    // for display time
+    let minutes = parseInt(displayTime / 60) % 60
+    let seconds = displayTime % 60
+    let session = stage ? "working" : "break"
+    
+    return (
+      <div className={session + " circle"} onClick={this.props.onStartTimer} style={this.mainCircleStyles()}>
+        <img className="tomato"
+          style={this.tomatoStyles()} src="https://www.emojibase.com/resources/img/emojis/hangouts/1f345.png" />
+        <div className="displayTime">
+          {minutes}:{seconds<10 ? ("0" + seconds.toString()) : seconds }<br/>
+          {stage ? "Work" : "Break!" }
+        </div>
+      </div>
+    )
+  }
+}
+
+class Layout extends React.Component {
+  render() {
+    let { timerStart, stopwatch, pomo, breaks, stage, displayTime } = this.props.timer
+    const changePomo = this.props.onChangePomo.bind(this)
+    const startTimer = this.props.onStartTimer.bind(this)
+    const stopTimer = this.props.onStopTimer.bind(this)
+    const clearTimer = this.props.onClearTimer.bind(this)
+    const switchStage = this.props.onSwitchStage.bind(this)
+    
+    // percent prop for circle animation
+    const percent = stopwatch/(stage ? pomo*60 :breaks*60 )
+    
+    //     convert to base 60
+    let minutes = parseInt(displayTime / 60) % 60
+    let seconds = displayTime % 60
+    
+    return (
+      <div className="col-xs-12 flex">
+        <h1 className="title">Pomodoro Timer</h1>
+        <div className="btn-container">
+          <div className="flex-col">
+            <h4>Session</h4>
+            <button className="btn btn-danger" type="submit" onClick={changePomo} value="-1,pomo">-</button> 
+            {pomo}min 
+            <button className="btn btn-success" type="submit" onClick={changePomo} value="1,pomo">+</button>
+          </div>
+          <div className="flex-col">
+            <h4>Break</h4>
+            <button className="btn btn-danger" type="submit" onClick={changePomo} value="-1,breaks">-</button> 
+            {breaks}min 
+            <button className="btn btn-success" type="submit" onClick={changePomo} value="1,breaks">+</button>
+          </div>
+        </div>
+        
+        
+        <Circle onStartTimer={startTimer} state={this.props.timer} percent={percent}/>
+        <div className="credits">Made by  
+          <a href="http://musedivision.github.io">
+             Patrick McCaffrey
+          </a>
+        </div>
+        
+      </div>
+    )
+  }
+}
+
+class LayoutContainer extends React.Component {
+  constructor() {
+    super()
+    this.state = {
+      timerStart: 0,
+      stopwatch: 0,
+      displayTime: 1500,
+      stage: 1,
+      pomo: 25,
+      breaks: 5,
+      timerId: 0,
+      play: true,
+    }
+  }
+  
+  count() {
+    let timerId = setInterval(this.handleState.bind(this), 1000)
+    let { stage, pomo, breaks, stopwatch } = this.state
+    let length = (stage ? pomo : breaks) * 60
+    let display = stopwatch<1 ? length: length - stopwatch 
+    
+    this.setState({
+      timerId: timerId,
+      displayTime: display
+    })
+  }
+  
+  handleChangePomo(e){
+    let { play } = this.state
+    
+    let change = {}
+    let btnInfo = e.target.value.split(',')
+    let pomo = this.state[btnInfo[1]] + Number(btnInfo[0])
+    change[btnInfo[1]] = pomo
+    // based 
+    change['displayTime'] = pomo * 60
+    
+    !play ? null : this.setState(change)
+    
+  }
+  
+  handleState() {
+    let { pomo, breaks, stage, stopwatch} = this.state
+    
+    stopwatch++
+    let length = (stage ? pomo : breaks) * 60  
+    let display = length - stopwatch    
+    
+    if(stopwatch <= length) {
+      this.setState({
+        stopwatch: stopwatch,
+        displayTime: display
+      })
+    } else{
+      this.switchStage()
+    }
+  }
+  
+  switchStage() {
+    let { stage,play } = this.state
+    let change = stage ? 0 : 1
+    this.setState({
+      stage: change,
+      play: !play
+    })
+    this.clearTimer()
+    this.startTimer(change)
+    
+  }
+  
+  stopTimer() {
+    let { timerId, play }= this.state
+    console.log(timerId,": setInterval timer stopped")
+    this.setState({
+        play: !play
+      })
+    clearInterval(timerId)
+    
+  }
+  
+  clearTimer() {
+    let { timerId, stage, pomo, breaks } = this.state
+    console.log(timerId,": setInterval timer cleared")
+    clearInterval(timerId)
+    
+    // reset  display time and stage
+    let length = (stage ? pomo : breaks) * 60 
+    this.setState({
+      stopwatch: 0,
+      stage: 1,
+      displayTime: length
+    })
+    
+  }
+  
+  startTimer(change){
+    // if timer is going then stop, otherwise start.
+    let { play, stage } = this.state
+    if(!play) {
+      this.stopTimer()
+    } else {
+      const time = new Date().getTime() / 1000
+      clearInterval(this.state.timerId)
+      this.setState({
+        timerStart: time,
+        stage: change,
+        play: !play
+      })
+
+      this.count()
+    }
+    
+    
+  }
+  
+  render() {
+    
+    
+    return (
+      < Layout
+        timer={this.state}
+        
+        onChangePomo={this.handleChangePomo.bind(this)}
+        onStartTimer={this.startTimer.bind(this)}
+        onStopTimer={this.stopTimer.bind(this)}
+        onClearTimer={this.clearTimer.bind(this)}
+        onSwitchStage={this.switchStage.bind(this)}
+        />
+    )
+  }
+}
+
+ReactDOM.render(<LayoutContainer />, document.getElementById('app'))
